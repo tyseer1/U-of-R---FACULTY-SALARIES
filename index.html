@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UofR Faculty Compensation Directory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a52;
+            --secondary: #c49a6c;
+            --accent: #8b4513;
+            --bg: #f5f5f5;
+            --text: #2c2c2c;
+            --text-light: #666;
+            --border: #d4c5b0;
+            --highlight: #fff5e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: linear-gradient(135deg, #fafafa 0%, #e8e8e8 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: slideDown 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 0 var(--secondary);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .search-container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px var(--border);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.6s ease-out 0.4s backwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .search-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Source Sans 3', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--highlight);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 58, 82, 0.1);
+            transform: translateY(-2px);
+        }
+
+        button {
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Source Sans 3', sans-serif;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 69, 19, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            animation: fadeIn 0.6s ease-out 0.6s backwards;
+        }
+
+        .results-container {
+            animation: fadeIn 0.6s ease-out 0.8s backwards;
+        }
+
+        .result-card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 6px solid var(--secondary);
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease-out backwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-left-color: var(--accent);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .professor-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .salary {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Source Sans 3', sans-serif;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .no-results h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .no-results p {
+            color: var(--text-light);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, var(--secondary) 0%, var(--secondary) 100%);
+            background-repeat: no-repeat;
+            background-size: 0% 40%;
+            background-position: 0 85%;
+            animation: highlightText 0.8s ease-out 0.3s forwards;
+        }
+
+        @keyframes highlightText {
+            to {
+                background-size: 100% 40%;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 2px solid var(--border);
+            animation: fadeIn 0.6s ease-out 1s backwards;
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            input[type="text"] {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Faculty Compensation <span class="highlight">Directory</span></h1>
+            <p class="subtitle">University of Regina • 2024 Tax Year</p>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="firstName" placeholder="First Name" autocomplete="off">
+                <input type="text" id="lastName" placeholder="Last Name" autocomplete="off">
+                <button onclick="searchProfessor()">Search</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <strong>Database:</strong> <span id="totalCount">0</span> faculty members earning $125,000+
+        </div>
+
+        <div class="results-container" id="results"></div>
+
+        <footer>
+            <p><strong>Data Source:</strong> University of Regina 2024 Public Salary Disclosure</p>
+            <p>Showing employees with employment income of $125,000 or greater</p>
+            <p> If anybody has any suggestion pls email bankhan90@gmail.com</p>
+        </footer>
+    </div>
+
+    <script>
+        const facultyData = [
+            {"lastName": "Abbott", "firstName": "Sarah", "salary": 189127.28},
+            {"lastName": "Abouelela", "firstName": "Mohamed", "salary": 127202.57},
+            {"lastName": "Afolabi", "firstName": "Taiwo", "salary": 225912.34},
+            {"lastName": "Ahmed", "firstName": "Sultan", "salary": 194065.91},
+            {"lastName": "Aito", "firstName": "Emmanuel", "salary": 152613.06},
+            {"lastName": "Akinpelu", "firstName": "Michael", "salary": 164169.94},
+            {"lastName": "Al-Anbagi", "firstName": "Irfan", "salary": 173715.04},
+            {"lastName": "Almehdawe", "firstName": "Eman", "salary": 227275.16},
+            {"lastName": "Anderson", "firstName": "Bradley", "salary": 175595.62},
+            {"lastName": "Anderson", "firstName": "Bruce", "salary": 190086.36},
+            {"lastName": "Anderson", "firstName": "Dawn", "salary": 131125.24},
+            {"lastName": "Angell", "firstName": "Michael", "salary": 126038.73},
+            {"lastName": "Argerami", "firstName": "Martin", "salary": 223598.61},
+            {"lastName": "Armstrong", "firstName": "Alayne", "salary": 180239.68},
+            {"lastName": "Arnal", "firstName": "William", "salary": 213303.51},
+            {"lastName": "Aroonwilas", "firstName": "Adisorn", "salary": 193338.26},
+            {"lastName": "Arries-Kleyenstuber", "firstName": "Ebin", "salary": 197550.36},
+            {"lastName": "Arvidson", "firstName": "Sherry", "salary": 175812.92},
+            {"lastName": "Asadullah", "firstName": "Muhammad", "salary": 149654.82},
+            {"lastName": "Asmundson", "firstName": "Gordon", "salary": 309316.42},
+            {"lastName": "Azadbakht", "firstName": "Saman", "salary": 150828.93},
+            {"lastName": "Azam", "firstName": "Shahid", "salary": 207554.81},
+            {"lastName": "Babu", "firstName": "Mohan", "salary": 213482.19},
+            {"lastName": "Bae", "firstName": "Taehan", "salary": 173531.26},
+            {"lastName": "Bais", "firstName": "Abdul", "salary": 180555.18},
+            {"lastName": "Bakker", "firstName": "Caitlin", "salary": 141423.41},
+            {"lastName": "Baldock", "firstName": "Drew", "salary": 131645.48},
+            {"lastName": "Barbi", "firstName": "Mauricio", "salary": 209068.70},
+            {"lastName": "Barden", "firstName": "John", "salary": 243326.52},
+            {"lastName": "Barlow", "firstName": "Dana", "salary": 146065.73},
+            {"lastName": "Battie", "firstName": "Kyath", "salary": 128714.63},
+            {"lastName": "Battis", "firstName": "Jes", "salary": 165797.81},
+            {"lastName": "Baydoun", "firstName": "Mohamad", "salary": 159032.16},
+            {"lastName": "Bazzul", "firstName": "Jesse", "salary": 157778.29},
+            {"lastName": "Beckwell", "firstName": "Erin", "salary": 135595.94},
+            {"lastName": "Belisle", "firstName": "Donica", "salary": 186319.73},
+            {"lastName": "Bell", "firstName": "Kenneth", "salary": 229779.68},
+            {"lastName": "Berg", "firstName": "Marcella", "salary": 137884.56},
+            {"lastName": "Bernard", "firstName": "Buryl", "salary": 128068.27},
+            {"lastName": "Beshai", "firstName": "Shadi", "salary": 133174.64},
+            {"lastName": "Bethune", "firstName": "Kathryn", "salary": 224449.71},
+            {"lastName": "Biesenthal", "firstName": "Dean", "salary": 229786.63},
+            {"lastName": "Blachford", "firstName": "Dongyan", "salary": 218112.92},
+            {"lastName": "Blake", "firstName": "Raymond", "salary": 242121.02},
+            {"lastName": "Bockarie", "firstName": "Abu", "salary": 195268.30},
+            {"lastName": "Bolen", "firstName": "Kevin", "salary": 164742.18},
+            {"lastName": "Bond", "firstName": "Kevin", "salary": 179304.52},
+            {"lastName": "Bouchardon", "firstName": "Nadine", "salary": 166113.95},
+            {"lastName": "Boutouchent", "firstName": "Fadila", "salary": 168738.85},
+            {"lastName": "Bracht", "firstName": "Kathryn", "salary": 195513.30},
+            {"lastName": "Bradley", "firstName": "Cara", "salary": 184602.25},
+            {"lastName": "Bradley", "firstName": "Crista", "salary": 141141.03},
+            {"lastName": "Brigham", "firstName": "R. Mark", "salary": 228737.82},
+            {"lastName": "Bright", "firstName": "Shauna", "salary": 152415.36},
+            {"lastName": "Brown", "firstName": "Douglas", "salary": 180701.46},
+            {"lastName": "Brown", "firstName": "Janine", "salary": 197256.36},
+            {"lastName": "Bruno", "firstName": "Paul", "salary": 185126.07},
+            {"lastName": "Butikofer", "firstName": "Marc", "salary": 165970.89},
+            {"lastName": "Butler", "firstName": "Karlyn", "salary": 147024.77},
+            {"lastName": "Buttigieg", "firstName": "Josef", "salary": 166627.95},
+            {"lastName": "Butz", "firstName": "Cortney", "salary": 241012.14},
+            {"lastName": "Cameron", "firstName": "Andrew", "salary": 191418.37},
+            {"lastName": "Camillo", "firstName": "Cheryl", "salary": 146544.31},
+            {"lastName": "Campbell", "firstName": "Ian", "salary": 135713.98},
+            {"lastName": "Campbell", "firstName": "Lori", "salary": 174319.59},
+            {"lastName": "Campbell", "firstName": "Shelagh", "salary": 127276.46},
+            {"lastName": "Candow", "firstName": "Darren", "salary": 262751.56},
+            {"lastName": "Cappello", "firstName": "Michael", "salary": 188725.76},
+            {"lastName": "Carleton", "firstName": "Erica", "salary": 236538.33},
+            {"lastName": "Carleton", "firstName": "R. Nicholas", "salary": 244867.84},
+            {"lastName": "Carnochan Naqvi", "firstName": "Sarah", "salary": 148944.82},
+            {"lastName": "Carter", "firstName": "Claire", "salary": 163472.82},
+            {"lastName": "Cetin", "firstName": "Halis", "salary": 136797.11},
+            {"lastName": "Chalise", "firstName": "Shasanka", "salary": 148299.11},
+            {"lastName": "Chalmers", "firstName": "Darlene", "salary": 199506.79},
+            {"lastName": "Chambers", "firstName": "Ruth", "salary": 222423.39},
+            {"lastName": "Chan", "firstName": "Andrew", "salary": 135796.97},
+            {"lastName": "Chan", "firstName": "Christine", "salary": 191221.29},
+            {"lastName": "Charrier", "firstName": "Philip", "salary": 196164.92},
+            {"lastName": "Chaudhry", "firstName": "Haroon", "salary": 178797.81},
+            {"lastName": "Cheng", "firstName": "Stephen", "salary": 132142.14},
+            {"lastName": "Chernov", "firstName": "Gennadiy", "salary": 185422.96},
+            {"lastName": "Chi", "firstName": "Guoxiang", "salary": 224649.71},
+            {"lastName": "Childs", "firstName": "Jason", "salary": 196408.66},
+            {"lastName": "Chipanshi", "firstName": "Mary", "salary": 174879.23},
+            {"lastName": "Choi", "firstName": "Phillip", "salary": 256913.00},
+            {"lastName": "Chow", "firstName": "Henry", "salary": 235016.87},
+            {"lastName": "Cismaru", "firstName": "Magdalena", "salary": 234190.22},
+            {"lastName": "Cismaru", "firstName": "Romulus", "salary": 162186.91},
+            {"lastName": "Ciupa", "firstName": "Kristin", "salary": 146439.51},
+            {"lastName": "Clark", "firstName": "Jaclyn", "salary": 134973.72},
+            {"lastName": "Clarke", "firstName": "James", "salary": 127110.65},
+            {"lastName": "Clarke", "firstName": "Paul", "salary": 205464.49},
+            {"lastName": "Cliveti", "firstName": "Monica", "salary": 136263.71},
+            {"lastName": "Clune", "firstName": "Laurie", "salary": 219240.56},
+            {"lastName": "Cote", "firstName": "Mark", "salary": 143338.59},
+            {"lastName": "Coulson", "firstName": "Ian", "salary": 222135.60},
+            {"lastName": "Coupal", "firstName": "Michelle", "salary": 191721.59},
+            {"lastName": "Couros", "firstName": "Alec", "salary": 232117.55},
+            {"lastName": "Couture", "firstName": "Joseph", "salary": 132328.71},
+            {"lastName": "Cripps", "firstName": "Douglas", "salary": 164756.02},
+            {"lastName": "Crooks", "firstName": "Stacey", "salary": 125654.17},
+            {"lastName": "Cule", "firstName": "Monika", "salary": 201663.93},
+            {"lastName": "Cunningham", "firstName": "Trevor", "salary": 133469.02},
+            {"lastName": "Cushon", "firstName": "Kate", "salary": 152112.52},
+            {"lastName": "Dahlstrom", "firstName": "Barclay", "salary": 153504.12},
+            {"lastName": "Dahms", "firstName": "Tanya", "salary": 256513.76},
+            {"lastName": "Dai", "firstName": "Liming", "salary": 232839.99},
+            {"lastName": "Dalrymple", "firstName": "Megan", "salary": 139382.87},
+            {"lastName": "D'Arcy", "firstName": "James", "salary": 229125.93},
+            {"lastName": "Daschuk", "firstName": "James", "salary": 182488.10},
+            {"lastName": "Davies", "firstName": "Shauna", "salary": 168241.80},
+            {"lastName": "de Lugt", "firstName": "Jennifer", "salary": 184407.96},
+            {"lastName": "Dea", "firstName": "Shannon", "salary": 237469.79},
+            {"lastName": "DeCoste", "firstName": "D. Marcel", "salary": 212922.79},
+            {"lastName": "Demers", "firstName": "Jason", "salary": 162306.26},
+            {"lastName": "deMontigny", "firstName": "David", "salary": 220601.77},
+            {"lastName": "Deng", "firstName": "DianLiang", "salary": 216225.71},
+            {"lastName": "Deren", "firstName": "Naomi", "salary": 173056.53},
+            {"lastName": "Deschamps", "firstName": "Raymond", "salary": 128828.84},
+            {"lastName": "Diamantopoulos", "firstName": "Dimitrios", "salary": 180701.46},
+            {"lastName": "Dick", "firstName": "David", "salary": 202701.07},
+            {"lastName": "Dietz", "firstName": "Heather", "salary": 154854.96},
+            {"lastName": "Dobson", "firstName": "Bonnie", "salary": 136648.32},
+            {"lastName": "Doerksen", "firstName": "Brad", "salary": 156882.39},
+            {"lastName": "Dolter", "firstName": "Brett", "salary": 142303.43},
+            {"lastName": "Doran", "firstName": "Ryan", "salary": 144855.70},
+            {"lastName": "Dorsch", "firstName": "Kim", "salary": 228961.37},
+            {"lastName": "Dostaler", "firstName": "Isabelle", "salary": 316652.06},
+            {"lastName": "Douai", "firstName": "Aziz", "salary": 224548.75},
+            {"lastName": "Douglas", "firstName": "Peter", "salary": 181306.22},
+            {"lastName": "Douglas", "firstName": "Trevor", "salary": 164112.14},
+            {"lastName": "Du", "firstName": "Zhongwei", "salary": 145061.71},
+            {"lastName": "Dubnewick", "firstName": "Michael", "salary": 152204.50},
+            {"lastName": "East", "firstName": "Allan", "salary": 219931.56},
+            {"lastName": "Eaton", "firstName": "Andrew", "salary": 141337.97},
+            {"lastName": "Eaton", "firstName": "Emily", "salary": 192880.00},
+            {"lastName": "El-Halfawy", "firstName": "Omar", "salary": 162098.53},
+            {"lastName": "Elliott", "firstName": "David", "salary": 180701.46},
+            {"lastName": "Elliott", "firstName": "Lee", "salary": 137309.64},
+            {"lastName": "England", "firstName": "Shannon", "salary": 184522.28},
+            {"lastName": "Enright", "firstName": "L.", "salary": 133972.93},
+            {"lastName": "Eremondi", "firstName": "Joseph", "salary": 134040.75},
+            {"lastName": "Erhardt", "firstName": "Jolene", "salary": 138382.87},
+            {"lastName": "Evans", "firstName": "Robin (Rober", "salary": 205972.58},
+            {"lastName": "Exner", "firstName": "Arthur", "salary": 264186.32},
+            {"lastName": "Exner", "firstName": "Eric", "salary": 129614.87},
+            {"lastName": "Fallat", "firstName": "Shaun", "salary": 242672.77},
+            {"lastName": "Fan", "firstName": "Lisa", "salary": 208113.04},
+            {"lastName": "Farenick", "firstName": "Douglas", "salary": 267566.67},
+            {"lastName": "Farney", "firstName": "James", "salary": 222632.25},
+            {"lastName": "Fay", "firstName": "Holly", "salary": 149772.46},
+            {"lastName": "Fields", "firstName": "Jacqueline", "salary": 168565.63},
+            {"lastName": "Finlay", "firstName": "Kerri", "salary": 148609.48},
+            {"lastName": "Fletcher", "firstName": "Amber", "salary": 183712.82},
+            {"lastName": "Fletcher", "firstName": "Kara", "salary": 155634.97},
+            {"lastName": "Flomo", "firstName": "David", "salary": 140803.14},
+            {"lastName": "Floricel", "firstName": "Remus", "salary": 195563.15},
+            {"lastName": "Florizone", "firstName": "Daniel", "salary": 141633.52},
+            {"lastName": "Ford", "firstName": "Dianne", "salary": 320208.82},
+            {"lastName": "Fortowsky", "firstName": "Joseph", "salary": 183321.32},
+            {"lastName": "Fournier", "firstName": "Amelie", "salary": 163568.06},
+            {"lastName": "Frankland", "firstName": "Martin", "salary": 154204.39},
+            {"lastName": "Gacek", "firstName": "James", "salary": 149887.45},
+            {"lastName": "Gagnon", "firstName": "Jacqueline", "salary": 193012.29},
+            {"lastName": "Gallant", "firstName": "Natasha", "salary": 143150.18},
+            {"lastName": "Galushko", "firstName": "Viktoriya", "salary": 206443.40},
+            {"lastName": "Gamble", "firstName": "Lauren", "salary": 140449.64},
+            {"lastName": "Gamtessa", "firstName": "Samuel", "salary": 185894.52},
+            {"lastName": "Ganev", "firstName": "Robin", "salary": 149443.63},
+            {"lastName": "Garneau", "firstName": "David", "salary": 215020.48},
+            {"lastName": "Gaudet", "firstName": "Sophie", "salary": 180472.03},
+            {"lastName": "Gbekorbu-Matters", "firstName": "Christopher", "salary": 172176.03},
+            {"lastName": "Gelowitz", "firstName": "Craig", "salary": 197032.91},
+            {"lastName": "Genoe", "firstName": "M. Rebecca", "salary": 203412.29},
+            {"lastName": "Gerlach", "firstName": "Loretta", "salary": 128624.72},
+            {"lastName": "Gervais", "firstName": "Peter", "salary": 133841.92},
+            {"lastName": "Ghiglione", "firstName": "Brent", "salary": 185316.15},
+            {"lastName": "Gieni", "firstName": "Justine", "salary": 132254.21},
+            {"lastName": "Goodwin", "firstName": "Melanie", "salary": 157498.88},
+            {"lastName": "Gordon", "firstName": "Jennifer", "salary": 194068.80},
+            {"lastName": "Grafton", "firstName": "Emily", "salary": 156682.15},
+            {"lastName": "Grande", "firstName": "Troni", "salary": 173096.18},
+            {"lastName": "Granovsky-Larsen", "firstName": "Simon", "salary": 172672.99},
+            {"lastName": "Greenwood", "firstName": "Kari", "salary": 154305.02},
+            {"lastName": "Gregory", "firstName": "david", "salary": 287966.13},
+            {"lastName": "Griffith Brice", "firstName": "Melanie", "salary": 149500.01},
+            {"lastName": "Grinyer", "firstName": "Gwen", "salary": 175669.61},
+            {"lastName": "Gu", "firstName": "Yongan", "salary": 213176.61},
+            {"lastName": "Guliani", "firstName": "Harminder", "salary": 190556.30},
+            {"lastName": "Guo", "firstName": "Chun-Hua", "salary": 222238.93},
+            {"lastName": "Hadden", "firstName": "Corey", "salary": 323592.36},
+            {"lastName": "Hadjistavropoulos", "firstName": "Heather", "salary": 265862.92},
+            {"lastName": "Hadjistavropoulos", "firstName": "Thomas", "salary": 324124.95},
+            {"lastName": "Haidl", "firstName": "Mark", "salary": 169457.48},
+            {"lastName": "Hall", "firstName": "Britt", "salary": 209201.06},
+            {"lastName": "Hamilton", "firstName": "Howard", "salary": 237998.23},
+            {"lastName": "Han", "firstName": "Yu", "salary": 176576.20},
+            {"lastName": "Hancock", "firstName": "Amanda", "salary": 173476.81},
+            {"lastName": "Hansen", "firstName": "Lis", "salary": 140131.16},
+            {"lastName": "Hanson", "firstName": "Shannon", "salary": 137061.78},
+            {"lastName": "Hardenbicker", "firstName": "Ulrike", "salary": 179211.60},
+            {"lastName": "Hart", "firstName": "Mel", "salary": 165430.13},
+            {"lastName": "Hartner", "firstName": "George", "salary": 191069.94},
+            {"lastName": "Hebert", "firstName": "Cristyne", "salary": 158686.83},
+            {"lastName": "Heinrichs", "firstName": "Dwight", "salary": 166669.99},
+            {"lastName": "Heit", "firstName": "Lexie", "salary": 149757.21},
+            {"lastName": "Hengen", "firstName": "Simone", "salary": 133358.78},
+            {"lastName": "Henni", "firstName": "Amr", "salary": 226703.38},
+            {"lastName": "Hepting", "firstName": "Daryl", "salary": 210736.65},
+            {"lastName": "Herman", "firstName": "Allen", "salary": 227665.84},
+            {"lastName": "Herman", "firstName": "Catherine", "salary": 170870.19},
+            {"lastName": "Hildebrandt", "firstName": "Katia", "salary": 137886.64},
+            {"lastName": "Hillabold", "firstName": "Jean", "salary": 142788.51},
+            {"lastName": "Hirani", "firstName": "Shela", "salary": 185751.11},
+            {"lastName": "Hodson", "firstName": "Alexandra", "salary": 144735.51},
+            {"lastName": "Hoeber", "firstName": "Larena", "salary": 243667.38},
+            {"lastName": "Hoeber", "firstName": "Orland", "salary": 255291.63},
+            {"lastName": "Holmes", "firstName": "Shannon", "salary": 150354.82},
+            {"lastName": "Hong", "firstName": "Sam Yeol", "salary": 136274.78},
+            {"lastName": "Hopper", "firstName": "Tristan", "salary": 157373.54},
+            {"lastName": "Horacki", "firstName": "Michael", "salary": 142032.47},
+            {"lastName": "Horowitz", "firstName": "Risa", "salary": 193478.69},
+            {"lastName": "Hrebenik", "firstName": "Melissa", "salary": 158147.80},
+            {"lastName": "Huang", "firstName": "Guo", "salary": 241403.07},
+            {"lastName": "Huang", "firstName": "Helen", "salary": 213972.13},
+            {"lastName": "Huber", "firstName": "Garth", "salary": 247536.56},
+            {"lastName": "Hulston", "firstName": "Deborah", "salary": 143979.56},
+            {"lastName": "Hurlbert", "firstName": "Margot", "salary": 236187.64},
+            {"lastName": "Ibrahim", "firstName": "Hussameldin", "salary": 206691.09},
+            {"lastName": "Idem", "firstName": "Raphael", "salary": 272304.14},
+            {"lastName": "Ilori", "firstName": "Sarah", "salary": 157886.33},
+            {"lastName": "Isiaka", "firstName": "Abiodun", "salary": 183741.53},
+            {"lastName": "Jeffery", "firstName": "Bonnie", "salary": 243217.39},
+            {"lastName": "Jesse", "firstName": "Michell", "salary": 154624.52},
+            {"lastName": "Ji", "firstName": "Xia", "salary": 197869.50},
+            {"lastName": "Jia", "firstName": "Na", "salary": 178882.11},
+            {"lastName": "Jin", "firstName": "Yee-Chung", "salary": 240403.85},
+            {"lastName": "Johnson", "firstName": "Ernest", "salary": 222881.34},
+            {"lastName": "Johnston", "firstName": "Susan", "salary": 211903.76},
+            {"lastName": "Jones", "firstName": "Lorinda", "salary": 139936.63},
+            {"lastName": "Jones", "firstName": "Nicholas", "salary": 211444.23},
+            {"lastName": "Jones", "firstName": "Robert", "salary": 185669.04},
+            {"lastName": "Junek", "firstName": "Denise", "salary": 185022.28},
+            {"lastName": "Jurdi-Hage", "firstName": "Rozzet", "salary": 197188.00},
+            {"lastName": "Kabir", "firstName": "Golam", "salary": 162630.14},
+            {"lastName": "Keller", "firstName": "Jenny", "salary": 146606.64},
+            {"lastName": "Kelsey", "firstName": "Rosalyn", "salary": 154302.84},
+            {"lastName": "Kenzle", "firstName": "Danielle", "salary": 162179.35},
+            {"lastName": "Keown", "firstName": "Leslie-Anne", "salary": 183516.53},
+            {"lastName": "Keshen", "firstName": "Jeff", "salary": 395872.12},
+            {"lastName": "Kewistep", "firstName": "Neal", "salary": 128642.33},
+            {"lastName": "Khairalla", "firstName": "Ahmed", "salary": 147407.74},
+            {"lastName": "Khan", "firstName": "Saqib", "salary": 220697.89},
+            {"lastName": "Khan", "firstName": "Shakil", "salary": 161398.78},
+            {"lastName": "Khan", "firstName": "Sharfuddin A", "salary": 162466.86},
+            {"lastName": "Khandehroo", "firstName": "Koroush", "salary": 138936.63},
+            {"lastName": "Khayatzadeh-Mahani", "firstName": "Akram", "salary": 134867.34},
+            {"lastName": "Khodamoradi", "firstName": "Kamyar", "salary": 140205.87},
+            {"lastName": "Khondoker", "firstName": "Mohammad", "salary": 157484.93},
+            {"lastName": "Khovrenkov", "firstName": "Iryna", "salary": 181875.73},
+            {"lastName": "Kim", "firstName": "Youngsoo", "salary": 202787.61},
+            {"lastName": "King", "firstName": "Anna-Leah", "salary": 165998.50},
+            {"lastName": "King", "firstName": "Donna", "salary": 166218.43},
+            {"lastName": "Kleisinger", "firstName": "Jared", "salary": 180729.84},
+            {"lastName": "Kolev", "firstName": "Nikolay", "salary": 135308.25},
+            {"lastName": "Konecsni", "firstName": "Raymond", "salary": 168071.33},
+            {"lastName": "Kozdron", "firstName": "Michael", "salary": 186154.83},
+            {"lastName": "Kramer", "firstName": "Jennifer", "salary": 154305.02},
+            {"lastName": "Kuehling", "firstName": "Susanne", "salary": 187089.90},
+            {"lastName": "Kulczycki", "firstName": "Cory", "salary": 158681.08},
+            {"lastName": "Kyabaggu", "firstName": "Ramona", "salary": 166306.82},
+            {"lastName": "Laforge", "firstName": "Paul", "salary": 206682.66},
+            {"lastName": "Lamb", "firstName": "Tomoko", "salary": 146157.45},
+            {"lastName": "Lankauskas", "firstName": "Gediminas", "salary": 185626.12},
+            {"lastName": "Lavertu", "firstName": "Danny", "salary": 141980.58},
+            {"lastName": "Leavitt", "firstName": "Peter", "salary": 243675.73},
+            {"lastName": "LeDrew", "firstName": "June", "salary": 225242.02},
+            {"lastName": "Lefcoe", "firstName": "Alexandra", "salary": 148487.42},
+            {"lastName": "Lehmann", "firstName": "Karen", "salary": 187815.31},
+            {"lastName": "Levit", "firstName": "Tatiana", "salary": 183727.29},
+            {"lastName": "Leyton-Brown", "firstName": "Kenneth", "salary": 193336.44},
+            {"lastName": "Liberman", "firstName": "Sarah", "salary": 154305.02},
+            {"lastName": "Lichtenwald", "firstName": "Benjamin", "salary": 164531.49},
+            {"lastName": "Linton", "firstName": "Randy", "salary": 167522.72},
+            {"lastName": "Liski-Nixon", "firstName": "Alysia", "salary": 132283.71},
+            {"lastName": "Liu", "firstName": "Guili", "salary": 144988.78},
+            {"lastName": "Lockhart", "firstName": "Wallace", "salary": 125170.86},
+            {"lastName": "Longo", "firstName": "Justin", "salary": 170839.32},
+            {"lastName": "Loutzenhiser", "firstName": "Lynn", "salary": 187864.81},
+            {"lastName": "Luhanga", "firstName": "Florence", "salary": 195006.15},
+            {"lastName": "MacAulay Davalos", "firstName": "Erin", "salary": 134908.81},
+            {"lastName": "MacDonald", "firstName": "Jennifer", "salary": 139335.47},
+            {"lastName": "Machnaik", "firstName": "Julie", "salary": 147627.46},
+            {"lastName": "Maciag", "firstName": "Timothy", "salary": 155092.40},
+            {"lastName": "Mack", "firstName": "Gregory", "salary": 180729.84},
+            {"lastName": "MacKinnon", "firstName": "Marc", "salary": 135770.74},
+            {"lastName": "MacLennan", "firstName": "Richard", "salary": 215517.56},
+            {"lastName": "Magnan", "firstName": "Andre", "salary": 205936.37},
+            {"lastName": "Magnon", "firstName": "Celine", "salary": 162645.74},
+            {"lastName": "Maidorn", "firstName": "Patrick", "salary": 146676.55},
+            {"lastName": "Mang", "firstName": "Cameron", "salary": 181019.81},
+            {"lastName": "Mantesso", "firstName": "Jaime", "salary": 147950.74},
+            {"lastName": "Manzon", "firstName": "Richard", "salary": 228513.79},
+            {"lastName": "Mare", "firstName": "Augustin-Liv", "salary": 184771.15},
+            {"lastName": "Marsh", "firstName": "Charity", "salary": 218910.48},
+            {"lastName": "Massing", "firstName": "D.", "salary": 175500.36},
+            {"lastName": "Mathews", "firstName": "Vanessa", "salary": 170859.95},
+            {"lastName": "Matthews", "firstName": "Elise", "salary": 193976.94},
+            {"lastName": "Matz", "firstName": "Paula", "salary": 167353.92},
+            {"lastName": "Maurer", "firstName": "Temple", "salary": 165512.34},
+            {"lastName": "McBeth", "firstName": "Joyce", "salary": 136186.15},
+            {"lastName": "McDavid", "firstName": "Breigh", "salary": 128222.62},
+            {"lastName": "McDougall", "firstName": "Aislinn", "salary": 138768.48},
+            {"lastName": "McGinnis", "firstName": "Angela", "salary": 166588.08},
+            {"lastName": "McGowan", "firstName": "Sharlene", "salary": 135497.95},
+            {"lastName": "McIntosh", "firstName": "Thomas", "salary": 237162.29},
+            {"lastName": "McManus", "firstName": "Karla", "salary": 147486.98},
+            {"lastName": "McNair", "firstName": "Emily", "salary": 174417.78},
+            {"lastName": "McNeil", "firstName": "Barbara", "salary": 180701.46},
+            {"lastName": "McNutt", "firstName": "Kathleen", "salary": 194111.97},
+            {"lastName": "McQuinn", "firstName": "Brian", "salary": 158802.65},
+            {"lastName": "McVittie", "firstName": "James", "salary": 127137.72},
+            {"lastName": "Meagher", "firstName": "Karen", "salary": 187548.83},
+            {"lastName": "Mehrandezh", "firstName": "Mehran", "salary": 212386.22},
+            {"lastName": "Melancon", "firstName": "Jerome", "salary": 169301.83},
+            {"lastName": "Meldrum", "firstName": "David", "salary": 145457.55},
+            {"lastName": "Melhoff", "firstName": "Craig", "salary": 166222.15},
+            {"lastName": "Mihichuk", "firstName": "Lynn", "salary": 190748.04},
+            {"lastName": "Milne", "firstName": "Lise", "salary": 161696.14},
+            {"lastName": "Mirzaei", "firstName": "Omid", "salary": 148148.93},
+            {"lastName": "Mobed", "firstName": "Nader", "salary": 236313.19},
+            {"lastName": "Molina Girón", "firstName": "Alison", "salary": 170801.29},
+            {"lastName": "Morgan", "firstName": "Melissa", "salary": 158305.77},
+            {"lastName": "Moroz", "firstName": "Peter", "salary": 210764.36},
+            {"lastName": "Morstad", "firstName": "Denise", "salary": 142779.56},
+            {"lastName": "Mouhoub", "firstName": "Malek", "salary": 242234.59},
+            {"lastName": "Murphy", "firstName": "R.", "salary": 210606.79},
+            {"lastName": "Muthu", "firstName": "S. D. Jacob", "salary": 161440.01},
+            {"lastName": "Nahachewsky", "firstName": "James", "salary": 205945.85},
+            {"lastName": "Naqvi", "firstName": "Karim", "salary": 154991.86},
+            {"lastName": "Neary", "firstName": "Patrick", "salary": 240119.22},
+            {"lastName": "Nelke", "firstName": "Barbara", "salary": 188285.71},
+            {"lastName": "Nelson", "firstName": "Heather", "salary": 156620.69},
+            {"lastName": "Nestor", "firstName": "Rob", "salary": 167345.20},
+            {"lastName": "Ng", "firstName": "Tsun Wai Kel", "salary": 209891.75},
+            {"lastName": "Nikiforuk", "firstName": "Donna", "salary": 139234.88},
+            {"lastName": "Nkongolo-Bakenda", "firstName": "Jean-Marie", "salary": 233490.82},
+            {"lastName": "Nolan", "firstName": "Kathleen", "salary": 195358.37},
+            {"lastName": "Novik", "firstName": "Nuelle", "salary": 180701.46},
+            {"lastName": "Novotna", "firstName": "Gabriela", "salary": 200066.75},
+            {"lastName": "Oehler", "firstName": "Alexander", "salary": 150972.46},
+            {"lastName": "Onder", "firstName": "Nilgun", "salary": 201811.38},
+            {"lastName": "Oriet", "firstName": "Christopher", "salary": 234233.43},
+            {"lastName": "Ortega", "firstName": "Priyanwada", "salary": 151266.12},
+            {"lastName": "Ouellette", "firstName": "Dianne", "salary": 132202.89},
+            {"lastName": "Ouimet", "firstName": "Pierre-Phili", "salary": 141524.56},
+            {"lastName": "Papandreou", "firstName": "Zisis", "salary": 258084.80},
+            {"lastName": "Paranjape", "firstName": "Raman", "salary": 271195.58},
+            {"lastName": "Paskewitz", "firstName": "Neil", "salary": 219065.10},
+            {"lastName": "Pearce", "firstName": "Wes", "salary": 225950.00},
+            {"lastName": "Peng", "firstName": "George Zhaoj", "salary": 201759.56},
+            {"lastName": "Peng", "firstName": "Wei", "salary": 155605.08},
+            {"lastName": "Petty", "firstName": "Sheila", "salary": 268103.30},
+            {"lastName": "Phipps", "firstName": "Heather", "salary": 156672.61},
+            {"lastName": "Pidkowich", "firstName": "Barbara", "salary": 140608.18},
+            {"lastName": "Pino", "firstName": "Fritz", "salary": 145739.51},
+            {"lastName": "Pitariu", "firstName": "Adrian", "salary": 208625.54},
+            {"lastName": "Pollard", "firstName": "Cheryl", "salary": 224482.68},
+            {"lastName": "Poplyansky", "firstName": "Michael", "salary": 157798.05},
+            {"lastName": "Puplampu", "firstName": "Vivian", "salary": 174419.47},
+            {"lastName": "Purdham", "firstName": "Medrie", "salary": 184501.14},
+            {"lastName": "Qing", "firstName": "Hairuo", "salary": 214726.18},
+            {"lastName": "Raboud", "firstName": "Glen", "salary": 192015.49},
+            {"lastName": "Rabyj", "firstName": "Linsay", "salary": 162410.07},
+            {"lastName": "Raharimahefa", "firstName": "Tsilavo", "salary": 135482.82},
+            {"lastName": "Raina-Fulton", "firstName": "Renata", "salary": 222159.99},
+            {"lastName": "Ramsay", "firstName": "Christine", "salary": 234158.54},
+            {"lastName": "Ramshaw", "firstName": "Veronica", "salary": 125897.14},
+            {"lastName": "Raymond", "firstName": "Jeffery", "salary": 165316.46},
+            {"lastName": "Razek", "firstName": "Noha", "salary": 160801.78},
+            {"lastName": "Reid", "firstName": "Nathalie", "salary": 135262.14},
+            {"lastName": "Reiser", "firstName": "Sarah", "salary": 128991.46},
+            {"lastName": "Rennie", "firstName": "Morina", "salary": 302780.00},
+            {"lastName": "Ricketts", "firstName": "Kathryn", "salary": 144777.70},
+            {"lastName": "Riemer", "firstName": "Harold", "salary": 265339.35},
+            {"lastName": "Robbins", "firstName": "Leslie", "salary": 150117.45},
+            {"lastName": "Robertson", "firstName": "Lisa", "salary": 168093.74},
+            {"lastName": "Robinson", "firstName": "Kyle", "salary": 134350.15},
+            {"lastName": "Robinson", "firstName": "Tanis", "salary": 163601.15},
+            {"lastName": "Rocke", "firstName": "Cathy", "salary": 207045.28},
+            {"lastName": "Rogers", "firstName": "Randal", "salary": 186319.69},
+            {"lastName": "Rollo", "firstName": "Michael", "salary": 144125.29},
+            {"lastName": "Rolston", "firstName": "Glendon", "salary": 150378.88},
+            {"lastName": "Rossow-Kimball", "firstName": "Brenda", "salary": 162316.74},
+            {"lastName": "Rowe-McCulloch", "firstName": "Maris", "salary": 130454.59},
+            {"lastName": "Rubalcava", "firstName": "Arturo", "salary": 208722.61},
+            {"lastName": "Russell", "firstName": "Gale", "salary": 158944.33},
+            {"lastName": "Russell", "firstName": "September", "salary": 150004.09},
+            {"lastName": "Rutten-James", "firstName": "Myrina", "salary": 147418.69},
+            {"lastName": "Sadaoui-Mouhoub", "firstName": "Samira", "salary": 207392.50},
+            {"lastName": "Salad Hersi", "firstName": "Osman", "salary": 180701.46},
+            {"lastName": "Salm", "firstName": "Twyla", "salary": 234984.73},
+            {"lastName": "Sangster", "firstName": "Sarah", "salary": 142445.03},
+            {"lastName": "Sasakamoose", "firstName": "JoLee", "salary": 200308.76},
+            {"lastName": "Sauchyn", "firstName": "David", "salary": 223590.20},
+            {"lastName": "Saul", "firstName": "Gerald", "salary": 212141.08},
+            {"lastName": "Scheidt", "firstName": "November", "salary": 128665.22},
+            {"lastName": "Schnell", "firstName": "Melanie", "salary": 149653.95},
+            {"lastName": "Schoch", "firstName": "Vicki", "salary": 138936.63},
+            {"lastName": "Schroeter", "firstName": "Sara", "salary": 164529.15},
+            {"lastName": "Schultz", "firstName": "Christie", "salary": 206990.45},
+            {"lastName": "Seinen", "firstName": "Jonathan", "salary": 144178.20},
+            {"lastName": "Serroul", "firstName": "Juliana", "salary": 183769.97},
+            {"lastName": "Shah", "firstName": "Nisarg", "salary": 138864.28},
+            {"lastName": "Shahriar", "firstName": "Nashid", "salary": 172133.51},
+            {"lastName": "Sharma", "firstName": "Yogesh", "salary": 154869.01},
+            {"lastName": "Sharpe", "firstName": "Donald", "salary": 230318.29},
+            {"lastName": "Sherbert", "firstName": "Garry", "salary": 212555.94},
+            {"lastName": "Shires", "firstName": "John", "salary": 162247.27},
+            {"lastName": "Shirif", "firstName": "Ezeddin", "salary": 218984.72},
+            {"lastName": "Siddiqui", "firstName": "Sanobar Anju", "salary": 180973.80},
+            {"lastName": "Siemer", "firstName": "Julia", "salary": 180701.46},
+            {"lastName": "Siggins", "firstName": "Yaya", "salary": 132076.53},
+            {"lastName": "Simard Smith", "firstName": "Paul", "salary": 152021.81},
+            {"lastName": "Sinclair", "firstName": "Paul", "salary": 202210.64},
+            {"lastName": "Situm", "firstName": "Arthur", "salary": 158377.77},
+            {"lastName": "skelton", "firstName": "j", "salary": 140179.39},
+            {"lastName": "Smit", "firstName": "Sara", "salary": 169724.74},
+            {"lastName": "Smith", "firstName": "Austen", "salary": 139106.45},
+            {"lastName": "Smith", "firstName": "Erika", "salary": 146953.98},
+            {"lastName": "Smith", "firstName": "John", "salary": 229786.63},
+            {"lastName": "Soifer", "firstName": "Eldon", "salary": 213492.08},
+            {"lastName": "Somers", "firstName": "Christopher", "salary": 205811.55},
+            {"lastName": "Son", "firstName": "Ellen", "salary": 137382.59},
+            {"lastName": "Sonder", "firstName": "Robert", "salary": 156850.29},
+            {"lastName": "Song", "firstName": "Catherine", "salary": 154833.80},
+            {"lastName": "Sorensen", "firstName": "Michele", "salary": 144880.05},
+            {"lastName": "Sperlich", "firstName": "Tobias", "salary": 203067.31},
+            {"lastName": "Spitzer", "firstName": "Joseph", "salary": 129587.51},
+            {"lastName": "Spooner", "firstName": "Marc", "salary": 208216.85},
+            {"lastName": "Stanley", "firstName": "Donald", "salary": 202768.33},
+            {"lastName": "Starblanket", "firstName": "Danette", "salary": 139541.33},
+            {"lastName": "Staseson", "firstName": "Rae", "salary": 209152.88},
+            {"lastName": "Stavrinides", "firstName": "John", "salary": 208252.24},
+            {"lastName": "Steen", "firstName": "Sandra", "salary": 163242.98},
+            {"lastName": "Sterenberg", "firstName": "Brian", "salary": 209743.45},
+            {"lastName": "Sterzuk", "firstName": "Andrea", "salary": 204931.00},
+            {"lastName": "Stevens", "firstName": "Andrew", "salary": 202959.56},
+            {"lastName": "Stewart", "firstName": "Michelle", "salary": 201607.93},
+            {"lastName": "Stilling", "firstName": "Denise", "salary": 201759.56},
+            {"lastName": "Stoddart", "firstName": "Alexandra", "salary": 133603.33},
+            {"lastName": "Storie", "firstName": "Dale", "salary": 190955.96},
+            {"lastName": "Stradeski", "firstName": "Lamont", "salary": 159718.42},
+            {"lastName": "Street", "firstName": "Chris", "salary": 248988.41},
+            {"lastName": "Suh", "firstName": "Dae Yeon", "salary": 214684.57},
+            {"lastName": "Swapp", "firstName": "Donna", "salary": 156946.67},
+            {"lastName": "Sykes Tottenham", "firstName": "Laurie", "salary": 206725.66},
+            {"lastName": "Sylvestre", "firstName": "Glenys", "salary": 229786.63},
+            {"lastName": "Szechtman", "firstName": "Fernando", "salary": 184044.09},
+            {"lastName": "Szymanski", "firstName": "Shaun", "salary": 128634.14},
+            {"lastName": "Talbot", "firstName": "Selena", "salary": 163697.48},
+            {"lastName": "Tannouri", "firstName": "Fadi", "salary": 138936.63},
+            {"lastName": "Tchorzewski", "firstName": "Sasha", "salary": 145510.45},
+            {"lastName": "Teymurazyan", "firstName": "Aram", "salary": 171206.52},
+            {"lastName": "Theaker", "firstName": "Nicole", "salary": 139936.63},
+            {"lastName": "Thomas", "firstName": "Robert", "salary": 141382.34},
+            {"lastName": "Thompson", "firstName": "Scott", "salary": 215414.32},
+            {"lastName": "Thomson", "firstName": "Charisma", "salary": 136386.21},
+            {"lastName": "Tiggelers", "firstName": "Larissa", "salary": 143571.55},
+            {"lastName": "Tilson", "firstName": "Adam", "salary": 141747.86},
+            {"lastName": "Todd", "firstName": "Sarah", "salary": 151266.12},
+            {"lastName": "Tomin", "firstName": "Brittany", "salary": 143677.94},
+            {"lastName": "Tontiwachwuthikul", "firstName": "Paitoon", "salary": 288234.57},
+            {"lastName": "Torabi", "firstName": "Farshid", "salary": 236843.00},
+            {"lastName": "Totosy de Zepetnek", "firstName": "Julia", "salary": 148723.16},
+            {"lastName": "Tremblay", "firstName": "Arjun", "salary": 162869.98},
+            {"lastName": "Triggs", "firstName": "Valerie", "salary": 193404.53},
+            {"lastName": "Trussler", "firstName": "Michael", "salary": 227891.62},
+            {"lastName": "Truszkowski", "firstName": "Robert", "salary": 212972.17},
+            {"lastName": "Tucker", "firstName": "Sean", "salary": 133568.74},
+            {"lastName": "Tymchak", "firstName": "Mark", "salary": 147344.82},
+            {"lastName": "Uddin", "firstName": "Md Sami", "salary": 158052.64},
+            {"lastName": "van der Ven", "firstName": "Gillian", "salary": 155929.34},
+            {"lastName": "Vanderwel", "firstName": "Mark", "salary": 179614.83},
+            {"lastName": "Vaughan", "firstName": "Adam", "salary": 157439.51},
+            {"lastName": "Veawab", "firstName": "Amornvadee", "salary": 223697.17},
+            {"lastName": "Venter", "firstName": "Jan-Paul", "salary": 138854.96},
+            {"lastName": "Vindevoghel", "firstName": "Lisa", "salary": 134950.04},
+            {"lastName": "Volodin", "firstName": "Andrei", "salary": 228969.36},
+            {"lastName": "Voss", "firstName": "Maureen", "salary": 184522.28},
+            {"lastName": "Vujanovic", "firstName": "Gojko", "salary": 163872.56},
+            {"lastName": "Walker", "firstName": "Lori", "salary": 321566.66},
+            {"lastName": "Walters", "firstName": "Jeffrey", "salary": 164696.15},
+            {"lastName": "Wang", "firstName": "Li", "salary": 146173.25},
+            {"lastName": "Wang", "firstName": "Zhanle", "salary": 153552.14},
+            {"lastName": "Waytuck", "firstName": "Brett", "salary": 212584.07},
+            {"lastName": "Weger", "firstName": "Harold", "salary": 189127.28},
+            {"lastName": "Wellsch", "firstName": "Erin", "salary": 136068.64},
+            {"lastName": "Welsh", "firstName": "Bettina", "salary": 169770.33},
+            {"lastName": "West-McMaster", "firstName": "Brandy", "salary": 136829.58},
+            {"lastName": "Whalley", "firstName": "Sean", "salary": 159971.85},
+            {"lastName": "Wickson-Griffiths", "firstName": "Abigail", "salary": 184885.64},
+            {"lastName": "Widdifield", "firstName": "Cory", "salary": 152021.81},
+            {"lastName": "Wihak", "firstName": "Mark", "salary": 190078.51},
+            {"lastName": "Wilke", "firstName": "Sarah", "salary": 135999.15},
+            {"lastName": "Wilson", "firstName": "Grant", "salary": 204327.42},
+            {"lastName": "Wilson", "firstName": "Stuart", "salary": 213332.03},
+            {"lastName": "Wincherauk", "firstName": "Matthew", "salary": 159847.50},
+            {"lastName": "Winter", "firstName": "Christina", "salary": 164741.21},
+            {"lastName": "Wright", "firstName": "Kristi", "salary": 243069.34},
+            {"lastName": "Wu", "firstName": "Peng", "salary": 165425.94},
+            {"lastName": "Xue", "firstName": "Jinkai", "salary": 162857.33},
+            {"lastName": "Yang", "firstName": "Boting", "salary": 220931.56},
+            {"lastName": "Yang", "firstName": "Daoyong", "salary": 230037.74},
+            {"lastName": "Yao", "firstName": "Jingtao", "salary": 233980.11},
+            {"lastName": "Yao", "firstName": "Yiyu", "salary": 255938.10},
+            {"lastName": "Yee", "firstName": "Henry", "salary": 143311.16},
+            {"lastName": "Yost", "firstName": "Christopher", "salary": 273450.15},
+            {"lastName": "Young", "firstName": "Stephanie", "salary": 204849.76},
+            {"lastName": "Yow", "firstName": "Kin-Choong", "salary": 188877.50},
+            {"lastName": "Zaidi", "firstName": "Syed Adeel H", "salary": 135251.71},
+            {"lastName": "Zarzeczny", "firstName": "Amy", "salary": 196740.38},
+            {"lastName": "Zeng", "firstName": "Fanhua", "salary": 218566.84},
+            {"lastName": "Zhang", "firstName": "Lei", "salary": 178968.78},
+            {"lastName": "Zhang", "firstName": "Zhou", "salary": 226006.60},
+            {"lastName": "Zhao", "firstName": "Gang", "salary": 225694.10},
+            {"lastName": "Zhao", "firstName": "Yang", "salary": 187486.41},
+            {"lastName": "Zilles", "firstName": "Sandra", "salary": 231214.10},
+            {"lastName": "Zimmermann", "firstName": "Michael", "salary": 143306.98}
+        ];
+
+        document.getElementById('totalCount').textContent = facultyData.length;
+
+        function searchProfessor() {
+            const firstName = document.getElementById('firstName').value.trim().toLowerCase();
+            const lastName = document.getElementById('lastName').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('results');
+
+            if (!firstName && !lastName) {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h2>Enter a name to search</h2>
+                        <p>Please enter at least a first name or last name</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const results = facultyData.filter(person => {
+                const matchFirstName = !firstName || person.firstName.toLowerCase().includes(firstName);
+                const matchLastName = !lastName || person.lastName.toLowerCase().includes(lastName);
+                return matchFirstName && matchLastName;
+            });
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">😕</div>
+                        <h2>No Results Found</h2>
+                        <p>Try searching with a different name or check the spelling</p>
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = results.map((person, index) => `
+                    <div class="result-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="result-header">
+                            <div class="professor-name">${person.firstName} ${person.lastName}</div>
+                            <div class="salary">$${person.salary.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Allow search with Enter key
+        document.getElementById('firstName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchProfessor();
+        });
+        document.getElementById('lastName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchProfessor();
+        });
+    </script>
+</body>
+</html>
