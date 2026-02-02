@@ -179,6 +179,103 @@
             animation: fadeIn 0.6s ease-out 0.6s backwards;
         }
 
+        .most-searched-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px var(--border);
+            margin-bottom: 40px;
+            animation: scaleIn 0.6s ease-out 0.6s backwards;
+        }
+
+        .most-searched-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .most-searched-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .most-searched-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: var(--highlight);
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .most-searched-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            min-width: 40px;
+        }
+
+        .rank.top-1 { color: #d4af37; }
+        .rank.top-2 { color: #c0c0c0; }
+        .rank.top-3 { color: #cd7f32; }
+
+        .professor-info {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .professor-info .name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .professor-info .salary-small {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .search-count {
+            text-align: right;
+        }
+
+        .search-count .count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .search-count .label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
         .results-container {
             animation: fadeIn 0.6s ease-out 0.8s backwards;
         }
@@ -326,6 +423,14 @@
         <footer>
             <p><strong>Data Source:</strong> University of Regina 2024 Public Salary Disclosure</p>
             <p>Showing employees with employment income of $125,000 or greater</p>
+            <div class="most-searched-section" id="mostSearchedSection">
+            <h2> Most Searched Professors</h2>
+            <div class="most-searched-list" id="mostSearchedList">
+                <p style="text-align: center; color: var(--text-light); padding: 20px;">
+                    No searches yet. Start searching to see popular professors!
+                </p>
+            </div>
+        </div>
             <p> If anybody has any suggestion pls email bankhan90@gmail.com</p>
         </footer>
     </div>
@@ -864,8 +969,56 @@
             {"lastName": "Zimmermann", "firstName": "Michael", "salary": 143306.98}
         ];
 
+       // Initialize search tracker from localStorage
+        let searchTracker = JSON.parse(localStorage.getItem('profSearchTracker') || '{}');
+
+        // Save tracker to localStorage
+        function saveTracker() {
+            localStorage.setItem('profSearchTracker', JSON.stringify(searchTracker));
+        }
+
+        // Load most searched list
+        function loadMostSearched() {
+            const listDiv = document.getElementById('mostSearchedList');
+            
+            // Convert tracker to array and sort by count
+            const searches = Object.keys(searchTracker).map(key => {
+                const [firstName, lastName] = key.split('_');
+                const person = facultyData.find(p => p.firstName === firstName && p.lastName === lastName);
+                return {
+                    firstName,
+                    lastName,
+                    salary: person ? person.salary : 0,
+                    count: searchTracker[key]
+                };
+            }).sort((a, b) => b.count - a.count).slice(0, 10);
+
+            if (searches.length === 0) {
+                listDiv.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No searches yet. Start searching to see popular professors!</p>';
+            } else {
+                listDiv.innerHTML = searches.map((item, index) => {
+                    const rankClass = index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : '';
+                    return `
+                        <div class="most-searched-item">
+                            <div class="rank ${rankClass}">#${index + 1}</div>
+                            <div class="professor-info">
+                                <div class="name">${item.firstName} ${item.lastName}</div>
+                                <div class="salary-small">$${item.salary.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                            </div>
+                            <div class="search-count">
+                                <div class="count">${item.count}</div>
+                                <div class="label">searches</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        /* ========== NEW JAVASCRIPT END ========== */
+
         document.getElementById('totalCount').textContent = facultyData.length;
 
+        /* ========== MODIFIED FUNCTION START ========== */
         function searchProfessor() {
             const firstName = document.getElementById('firstName').value.trim().toLowerCase();
             const lastName = document.getElementById('lastName').value.trim().toLowerCase();
@@ -888,6 +1041,14 @@
                 return matchFirstName && matchLastName;
             });
 
+            // Track searches
+            results.forEach(person => {
+                const key = `${person.firstName}_${person.lastName}`;
+                searchTracker[key] = (searchTracker[key] || 0) + 1;
+            });
+            saveTracker();
+            loadMostSearched(); // Update leaderboard
+
             if (results.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="no-results">
@@ -897,16 +1058,24 @@
                     </div>
                 `;
             } else {
-                resultsDiv.innerHTML = results.map((person, index) => `
-                    <div class="result-card" style="animation-delay: ${index * 0.1}s">
-                        <div class="result-header">
-                            <div class="professor-name">${person.firstName} ${person.lastName}</div>
-                            <div class="salary">$${person.salary.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                resultsDiv.innerHTML = results.map((person, index) => {
+                    const key = `${person.firstName}_${person.lastName}`;
+                    const count = searchTracker[key] || 0;
+                    return `
+                        <div class="result-card" style="animation-delay: ${index * 0.1}s">
+                            <div class="result-header">
+                                <div class="professor-name">
+                                    ${person.firstName} ${person.lastName}
+                                    ${count > 0 ? `<span class="search-badge">${count} ${count === 1 ? 'search' : 'searches'}</span>` : ''}
+                                </div>
+                                <div class="salary">$${person.salary.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         }
+        /* ========== MODIFIED FUNCTION END ========== */
 
         // Allow search with Enter key
         document.getElementById('firstName').addEventListener('keypress', function(e) {
@@ -915,7 +1084,12 @@
         document.getElementById('lastName').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') searchProfessor();
         });
+
+        /* ========== NEW CODE START ========== */
+        // Load most searched on page load
+        loadMostSearched();
     </script>
 </body>
 
 </html>
+
